@@ -1,10 +1,14 @@
 import axios from "axios";
 import { AuthContext } from "context/AuthContext";
 import { useContext, useEffect, useState } from "react";
+import { CSVLink } from "react-csv";
 import ReactPaginate from "react-paginate";
 import { toast } from "react-toastify";
 
 const EmployeeList = () => {
+  // Export
+  const [exportData, setExportData] = useState([]);
+
   // Get Product List
   const { isLoading, setIsLoading } = useContext(AuthContext);
   const [employees, setEmployees] = useState([]);
@@ -19,6 +23,22 @@ const EmployeeList = () => {
       .then((res) => {
         setIsLoading(false);
         setEmployees(res.data.data);
+        const exportData = employees.map((v) => ({
+          id: v.ID,
+          createdTime: v.CreatedAt,
+          deletedTime: v.DeletedAt,
+          email: v.account.email,
+          fullName: v.fullName,
+          tel: v.tel,
+          gender: v.gender,
+          role:
+            v.account.roleId === 1
+              ? "Quản Lý"
+              : v.account.roleId === 2
+              ? "Phục Vụ"
+              : "Bếp",
+        }));
+        setExportData(exportData);
       })
       .catch((err) => {
         console.log(err);
@@ -90,7 +110,7 @@ const EmployeeList = () => {
     <div className="container-fluid table-responsive p-3 border rounded-3 shadow m-1">
       {/* Search */}
       <div className="row">
-        <div className="col-sm-6">
+        <div className="col-sm-4">
           <div className="input-group mb-3">
             <span className="input-group-text">
               <i className="fa-brands fa-searchengin"></i>
@@ -105,7 +125,7 @@ const EmployeeList = () => {
             />
           </div>
         </div>
-        <div className="col-sm-3">
+        <div className="col-sm-2">
           <input
             type="date"
             className="form-control"
@@ -114,7 +134,7 @@ const EmployeeList = () => {
             style={{ cursor: "not-allowed" }}
           />
         </div>
-        <div className="col-sm-3">
+        <div className="col-sm-2">
           <input
             type="date"
             className="form-control"
@@ -122,6 +142,27 @@ const EmployeeList = () => {
             name="endTime"
             style={{ cursor: "not-allowed" }}
           />
+        </div>
+        {/* Export: */}
+        <div className="col-sm-2">
+          <CSVLink
+            data={exportData}
+            className="btn btn-primary w-100"
+            filename={`${Date.now()}.csv`}
+          >
+            <i className="fa-solid fa-download mx-1"></i>
+            Tất Cả
+          </CSVLink>
+        </div>
+        <div className="col-sm-2">
+          <CSVLink
+            data={exportData}
+            className="btn btn-primary w-100 disabled"
+            filename={`${Date.now()}.csv`}
+          >
+            <i className="fa-solid fa-download mx-1"></i>
+            Đã Lọc
+          </CSVLink>
         </div>
       </div>
 

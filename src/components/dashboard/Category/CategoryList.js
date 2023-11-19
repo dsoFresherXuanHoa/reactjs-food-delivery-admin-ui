@@ -1,9 +1,13 @@
 import axios from "axios";
 import { AuthContext } from "context/AuthContext";
 import { useContext, useEffect, useState } from "react";
+import { CSVLink } from "react-csv";
 import ReactPaginate from "react-paginate";
 
 const CategoriesList = () => {
+  // Export
+  const [exportData, setExportData] = useState([]);
+
   // Get Categories List
   const [categories, setCategories] = useState([]);
   const { isLoading, setIsLoading } = useContext(AuthContext);
@@ -18,6 +22,11 @@ const CategoriesList = () => {
       .then((res) => {
         setIsLoading(false);
         setCategories(res.data.data);
+        const exportData = categories.map((v) => ({
+          name: v.name,
+          description: v.description,
+        }));
+        setExportData(exportData);
       })
       .catch((err) => {
         console.log(err);
@@ -34,7 +43,7 @@ const CategoriesList = () => {
     <div className="container-fluid table-responsive p-3 border rounded-3 shadow m-1">
       {/* Search */}
       <div className="row">
-        <div className="col-sm-6">
+        <div className="col-sm-4">
           <div className="input-group mb-3">
             <span className="input-group-text">
               <i className="fa-brands fa-searchengin"></i>
@@ -49,7 +58,7 @@ const CategoriesList = () => {
             />
           </div>
         </div>
-        <div className="col-sm-3">
+        <div className="col-sm-2">
           <input
             type="date"
             className="form-control"
@@ -58,7 +67,7 @@ const CategoriesList = () => {
             style={{ cursor: "not-allowed" }}
           />
         </div>
-        <div className="col-sm-3">
+        <div className="col-sm-2">
           <input
             type="date"
             className="form-control"
@@ -66,6 +75,27 @@ const CategoriesList = () => {
             disabled
             style={{ cursor: "not-allowed" }}
           />
+        </div>
+        {/* Export: */}
+        <div className="col-sm-2">
+          <CSVLink
+            data={exportData}
+            className="btn btn-primary w-100"
+            filename={`${Date.now()}.csv`}
+          >
+            <i className="fa-solid fa-download mx-1"></i>
+            Tất Cả
+          </CSVLink>
+        </div>
+        <div className="col-sm-2">
+          <CSVLink
+            data={exportData}
+            className="btn btn-primary w-100 disabled"
+            filename={`${Date.now()}.csv`}
+          >
+            <i className="fa-solid fa-download mx-1"></i>
+            Đã Lọc
+          </CSVLink>
         </div>
       </div>
 

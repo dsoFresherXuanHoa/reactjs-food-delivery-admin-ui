@@ -55,7 +55,7 @@ const RevenueList = () => {
     <div className="container-fluid p-3 border rounded-3 shadow m-1">
       {/* Search */}
       <div className="row">
-        <div className="col-sm-6">
+        <div className="col-sm-4">
           <div className="input-group mb-3">
             <span className="input-group-text">
               <i className="fa-brands fa-searchengin"></i>
@@ -99,7 +99,17 @@ const RevenueList = () => {
             filename={`${Date.now()}.csv`}
           >
             <i className="fa-solid fa-download mx-1"></i>
-            Tải Xuống
+            Tất Cả
+          </CSVLink>
+        </div>
+        <div className="col-sm-2">
+          <CSVLink
+            data={exportData}
+            className="btn btn-primary w-100 disabled"
+            filename={`${Date.now()}.csv`}
+          >
+            <i className="fa-solid fa-download mx-1"></i>
+            Đã Lọc
           </CSVLink>
         </div>
       </div>

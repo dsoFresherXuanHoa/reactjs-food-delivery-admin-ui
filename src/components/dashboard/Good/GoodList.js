@@ -3,11 +3,15 @@ import UpdateGood from "./UpdateGood";
 
 import { AuthContext } from "context/AuthContext";
 import { useContext, useEffect, useState } from "react";
+import { CSVLink } from "react-csv";
 import ReactPaginate from "react-paginate";
 import { toast } from "react-toastify";
 import { CurrencyFormat } from "utils/NumberUtil";
 
 const GoodsList = () => {
+  // Export
+  const [exportData, setExportData] = useState([]);
+
   // Get Product List
   const [selectedId, setSelectedId] = useState(0);
   const { isLoading, setIsLoading } = useContext(AuthContext);
@@ -23,6 +27,21 @@ const GoodsList = () => {
       .then((res) => {
         setIsLoading(false);
         setGoods(res.data.data);
+        const exportData = goods.map((v) => ({
+          createdAt: v.CreatedAt,
+          deletedAt: v.DeletedAt,
+          name: v.name,
+          description: v.description,
+          price: v.price,
+          img: v.thumb,
+          reorderLevel: v.reorderLevel,
+          stockAmount: v.stockAmount,
+          category: v.category.name,
+          discount: v.discount.discountPercent,
+          minQuantity: v.discount.minQuantity,
+          unit: v.uint,
+        }));
+        setExportData(exportData);
       })
       .catch((err) => {
         console.log(err);
@@ -71,7 +90,7 @@ const GoodsList = () => {
 
       {/* Search */}
       <div className="row">
-        <div className="col-sm-6">
+        <div className="col-sm-4">
           <div className="input-group mb-3">
             <span className="input-group-text">
               <i className="fa-brands fa-searchengin"></i>
@@ -86,7 +105,7 @@ const GoodsList = () => {
             />
           </div>
         </div>
-        <div className="col-sm-3">
+        <div className="col-sm-2">
           <input
             type="date"
             className="form-control"
@@ -96,7 +115,7 @@ const GoodsList = () => {
             }}
           />
         </div>
-        <div className="col-sm-3">
+        <div className="col-sm-2">
           <input
             type="date"
             className="form-control"
@@ -105,6 +124,27 @@ const GoodsList = () => {
               setEndTime(Date.parse(e.target.value));
             }}
           />
+        </div>
+        {/* Export: */}
+        <div className="col-sm-2">
+          <CSVLink
+            data={exportData}
+            className="btn btn-primary w-100"
+            filename={`${Date.now()}.csv`}
+          >
+            <i className="fa-solid fa-download mx-1"></i>
+            Tất Cả
+          </CSVLink>
+        </div>
+        <div className="col-sm-2">
+          <CSVLink
+            data={exportData}
+            className="btn btn-primary w-100 disabled"
+            filename={`${Date.now()}.csv`}
+          >
+            <i className="fa-solid fa-download mx-1"></i>
+            Đã Lọc
+          </CSVLink>
         </div>
       </div>
 
