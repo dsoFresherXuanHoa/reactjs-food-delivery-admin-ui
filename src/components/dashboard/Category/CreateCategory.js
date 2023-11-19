@@ -1,7 +1,49 @@
+import axios from "axios";
+import { AuthContext } from "context/AuthContext";
+import { useContext, useState } from "react";
+import { toast } from "react-toastify";
+
 const CreateCategory = () => {
+  // Handle Submit Form
+  const payload = {
+    name: "",
+    description: "",
+  };
+  const [formData, setFormData] = useState(payload);
+  const { setIsLoading } = useContext(AuthContext);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const accessToken = localStorage.getItem("accessToken");
+    console.log(formData);
+    axios
+      .post(`${process.env.REACT_APP_BASE_API_URL}/categories/`, formData, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then((res) => {
+        setIsLoading(true);
+        toast.success("Thêm nhóm sản phẩm thành công!");
+      })
+      .catch((err) => {
+        toast.success("Thêm nhóm sản phẩm thất bại!");
+      });
+  };
+
+  // Handle Reset
+  const handleReset = () => {
+    setFormData({
+      name: "",
+      description: "",
+    });
+  };
   return (
     <div className="p-3 border rounded-3 shadow m-1">
-      <form action="" method="post">
+      <form>
         <span>
           <i className="m-2 fa-solid fa-user fa-2x text-success"></i>
           <span className="mx-3 text-uppercase text-success fw-bold">
@@ -15,11 +57,12 @@ const CreateCategory = () => {
 
         <div className="form-floating my-3">
           <input
+            value={formData.name}
+            onChange={handleChange}
             type="text"
             className="form-control"
-            id="tfCategoryName"
             placeholder="Nhập tên sản phẩm:"
-            name="categoryName"
+            name="name"
             required
           />
           <label htmlFor="tfCategoryName">Tên Nhóm Sản Phẩm: </label>
@@ -27,8 +70,9 @@ const CreateCategory = () => {
 
         <div className="form-floating">
           <textarea
+            value={formData.description}
+            onChange={handleChange}
             className="form-control"
-            id="tfDescription"
             name="description"
             placeholder="Nhập mô tả sản phẩm tại đây: "
           ></textarea>
@@ -39,12 +83,14 @@ const CreateCategory = () => {
           <button
             type="submit"
             className="m-2 flex-fill btn btn-primary btn-block"
+            onClick={handleSubmit}
           >
             Đăng Ký
           </button>
           <button
             type="reset"
             className="m-2 flex-fill btn btn-primary btn btn-warning text-white"
+            onClick={handleReset}
           >
             Làm Lại
           </button>

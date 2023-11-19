@@ -1,10 +1,17 @@
+import Footer from "components/partial/Footer";
+import Header from "components/partial/Header";
 import CategoriesList from "./CategoryList";
 import CreateCategory from "./CreateCategory";
 
 const CategoryDashboard = () => {
   return (
     <div className="container-fluid">
-      <div className="border shadow position-relative" style={{ top: 70 }}>
+      <Header />
+
+      <div
+        className="border shadow"
+        style={{ marginTop: 70, minHeight: "65vh" }}
+      >
         <ul className="nav nav-tabs nav-justified" role="tablist">
           <li className="nav-item">
             <a className="nav-link active" data-bs-toggle="tab" href="#query">
@@ -33,6 +40,8 @@ const CategoryDashboard = () => {
           </div>
         </div>
       </div>
+
+      <Footer />
     </div>
   );
 };

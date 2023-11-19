@@ -63,6 +63,9 @@ const GoodsList = () => {
   // Sort
   const [sortDisable, setSortDisable] = useState(true);
 
+  // Time Filter
+  const [startTime, setStartTime] = useState(Date.now);
+  const [endTime, setEndTime] = useState(Date.now);
   return (
     <div className="container-fluid table-responsive p-3 border rounded-3 shadow m-1">
       {/* Update Modals */}
@@ -90,11 +93,20 @@ const GoodsList = () => {
             type="date"
             className="form-control"
             name="startTime"
-            onChange={(e) => console.log(Date(Date.parse(e.target.value)))}
+            onChange={(e) => {
+              setStartTime(Date.parse(e.target.value));
+            }}
           />
         </div>
         <div className="col-sm-3">
-          <input type="date" className="form-control" name="endTime" />
+          <input
+            type="date"
+            className="form-control"
+            name="endTime"
+            onChange={(e) => {
+              setEndTime(Date.parse(e.target.value));
+            }}
+          />
         </div>
       </div>
 
@@ -213,6 +225,12 @@ const GoodsList = () => {
           {goods
             .filter((v) =>
               v.name.toLowerCase().includes(searchKeyword.toLowerCase())
+            )
+            .filter((v) =>
+              startTime !== endTime
+                ? Date.parse(v.CreatedAt) > startTime &&
+                  Date.parse(v.CreatedAt) < endTime
+                : true
             )
             .slice(offset, offset + process.env.REACT_APP_PAGINATE_SIZE)
             .map((v, i) => {

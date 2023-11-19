@@ -2,14 +2,11 @@ import axios from "axios";
 import { AuthContext } from "context/AuthContext";
 import { useContext, useEffect, useState } from "react";
 import ReactPaginate from "react-paginate";
-import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const EmployeeList = () => {
   // Get Product List
-  const [selectedId, setSelectedId] = useState(0);
   const { isLoading, setIsLoading } = useContext(AuthContext);
-  const navigate = useNavigate();
   const [employees, setEmployees] = useState([]);
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
@@ -30,9 +27,6 @@ const EmployeeList = () => {
 
   // Search
   const [searchKeyword, setSearchKeyword] = useState("");
-
-  // Sort
-  const [sortDisable, setSortDisable] = useState(true);
 
   // Paging
   const [offset, setOffset] = useState(0);
@@ -114,6 +108,7 @@ const EmployeeList = () => {
           <input
             type="date"
             className="form-control"
+            disabled
             name="startTime"
             style={{ cursor: "not-allowed" }}
           />
@@ -122,6 +117,7 @@ const EmployeeList = () => {
           <input
             type="date"
             className="form-control"
+            disabled
             name="endTime"
             style={{ cursor: "not-allowed" }}
           />
