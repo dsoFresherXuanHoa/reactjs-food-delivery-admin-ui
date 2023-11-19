@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { CSVLink } from "react-csv";
 import ReactPaginate from "react-paginate";
+import { CurrencyFormat } from "utils/NumberUtil";
 
 const RevenueList = () => {
   // Export
@@ -124,7 +125,8 @@ const RevenueList = () => {
             <th>Bàn</th>
             <th>Khu Vực</th>
             <th>Sản Phẩm</th>
-            <th>Phân Loại Đơn</th>
+            <th>Tổng</th>
+            <th>Loại Đơn</th>
             <th>Ghi Chú</th>
             <th>Lý Do Hủy</th>
           </tr>
@@ -145,10 +147,10 @@ const RevenueList = () => {
             .slice(offset, offset + process.env.REACT_APP_PAGINATE_SIZE)
             .map((v, i) => (
               <tr key={i}>
-                <td>{new Date(Date.parse(v.createdTime)).toLocaleString()}</td>
+                <td>{new Date(Date.parse(v.createdTime)).toDateString()}</td>
                 <td>
                   {v.acceptedTime
-                    ? new Date(Date.parse(v.acceptedTime)).toLocaleString()
+                    ? new Date(Date.parse(v.acceptedTime)).toDateString()
                     : ""}
                 </td>
                 <td>{v.table.employee.fullName}</td>
@@ -159,16 +161,20 @@ const RevenueList = () => {
                     {v.items.map((v, i) => (
                       <li
                         key={i}
-                        className="list-group-item list-group-item-action list-group-item-primary d-flex justify-content-between align-items-center"
+                        className="list-group-item list-group-item-action list-group-item-primary d-flex justify-content-end"
                       >
                         {v.product.name}
-                        <span className="badge bg-primary rounded-pill">
+                        <span className="badge bg-primary rounded-pill ms-2">
                           {v.quantity}
+                        </span>
+                        <span className="badge bg-danger rounded-pill ms-2">
+                          {CurrencyFormat(v.product.actualDiscountPrice)}
                         </span>
                       </li>
                     ))}
                   </ul>
                 </td>
+                <td></td>
                 <td className="d-flex">
                   {v.compensate ? (
                     <button className="flex-fill btn btn-warning mx-1">
@@ -176,7 +182,7 @@ const RevenueList = () => {
                     </button>
                   ) : !v.acceptedTime ? (
                     <button className="flex-fill btn btn-warning mx-1">
-                      Chờ Chấp Nhận
+                      Chờ
                     </button>
                   ) : v.status ? (
                     <button className="flex-fill btn btn-success mx-1">

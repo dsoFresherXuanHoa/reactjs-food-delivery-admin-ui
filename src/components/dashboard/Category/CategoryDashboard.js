@@ -1,9 +1,21 @@
 import Footer from "components/partial/Footer";
 import Header from "components/partial/Header";
+import { AuthContext } from "context/AuthContext";
+import { useContext, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import CategoriesList from "./CategoryList";
 import CreateCategory from "./CreateCategory";
 
 const CategoryDashboard = () => {
+  // Check if user is login
+  const { isLogin } = useContext(AuthContext);
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (!isLogin) {
+      navigate(`/`);
+    }
+  }, [isLogin]);
+
   return (
     <div className="container-fluid">
       <Header />

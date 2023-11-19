@@ -5,6 +5,7 @@ import { useContext, useEffect } from "react";
 import { useNavigate } from "react-router";
 import CreateGoods from "./CreateGood";
 import GoodsList from "./GoodList";
+import StatGood from "./StatGood";
 
 const GoodDashboard = () => {
   // Check if user is login
@@ -57,7 +58,9 @@ const GoodDashboard = () => {
           <div id="create" className="container-fluid tab-pane fade">
             <CreateGoods />
           </div>
-          <div id="stats" className="container tab-pane fade"></div>
+          <div id="stats" className="container-fluid tab-pane fade">
+            <StatGood />
+          </div>
         </div>
       </div>
       <Footer />

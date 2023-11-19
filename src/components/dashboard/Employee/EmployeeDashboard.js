@@ -5,6 +5,7 @@ import { useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import SignUp from "../../auth/SignUp";
 import EmployeeList from "./EmployeeList";
+import StatEmployee from "./StatEmployee";
 
 const EmployeeDashboard = () => {
   // Check if user is login
@@ -57,7 +58,9 @@ const EmployeeDashboard = () => {
           <div id="create" className="container-fluid tab-pane fade">
             <SignUp />
           </div>
-          <div id="stats" className="container tab-pane fade"></div>
+          <div id="stats" className="container-fluid tab-pane fade">
+            <StatEmployee />
+          </div>
         </div>
       </div>
       <Footer />
