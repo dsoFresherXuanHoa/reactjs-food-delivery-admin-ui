@@ -69,6 +69,16 @@ const CreateGoods = () => {
       .then((res) => {
         setIsLoading(true);
         setIsAllowImport(true);
+        setFormData({
+          name: "",
+          thumb: "",
+          description: "",
+          price: 0,
+          categoryId: 1,
+          discountPercent: 0,
+          minQuantity: 0,
+          stockAmount: 0,
+        });
         toast.success("Thêm sản phẩm thành công!");
       })
       .catch((err) => {

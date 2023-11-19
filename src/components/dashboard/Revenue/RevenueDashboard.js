@@ -1,3 +1,4 @@
+import Footer from "components/partial/Footer";
 import Header from "components/partial/Header";
 import RevenueList from "./RevenueList";
 
@@ -6,7 +7,10 @@ const RevenueDashboard = () => {
     <div className="container-fluid">
       <Header />
 
-      <div className="border shadow position-relative" style={{ top: 70 }}>
+      <div
+        className="border shadow"
+        style={{ marginTop: 70, minHeight: "65vh" }}
+      >
         <ul className="nav nav-tabs nav-justified" role="tablist">
           <li className="nav-item">
             <a className="nav-link active" data-bs-toggle="tab" href="#query">
@@ -30,11 +34,11 @@ const RevenueDashboard = () => {
           <div id="query" className="container-fluid tab-pane active">
             <RevenueList />
           </div>
-          <div id="stats" className="container tab-pane fade">
-            <h3>Menu 2</h3>
-          </div>
+          <div id="stats" className="container tab-pane fade"></div>
         </div>
       </div>
+
+      <Footer />
     </div>
   );
 };

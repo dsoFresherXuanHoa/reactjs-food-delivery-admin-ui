@@ -69,12 +69,13 @@ const EmployeeList = () => {
     );
     if (confirm) {
       axios
-        .delete(`${process.env.REACT_APP_BASE_API_URL}/employees/${id}}`, {
+        .delete(`${process.env.REACT_APP_BASE_API_URL}/employees/${id}`, {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
         })
         .then((res) => {
+          setIsLoading(true);
           toast.success("Đã xóa quyền truy cập của tài khoản!");
         })
         .catch((err) => {
@@ -132,6 +133,7 @@ const EmployeeList = () => {
             <th>Địa Chỉ Email</th>
             <th>Số Điện Thoại</th>
             <th>Giới Tính</th>
+            <th>Trạng Thái</th>
             <th>Chức Vụ</th>
             <th>Thao Tác</th>
           </tr>
@@ -142,37 +144,48 @@ const EmployeeList = () => {
             .filter((v) =>
               v.fullName.toLowerCase().includes(searchKeyword.toLowerCase())
             )
-            .map((v, i) => (
-              <tr key={v.ID}>
-                <td>{v.fullName}</td>
-                <td>{v.account.email}</td>
-                <td>{v.tel}</td>
-                <td>{v.gender ? "Nữ" : "Nam"}</td>
-                <td>
-                  <button className="btn btn-primary m-auto disabled">
-                    {v.account.roleId === 1
-                      ? "Quản Lý"
-                      : v.account.roleId === 2
-                      ? "Phục Vụ"
-                      : "Bếp"}
-                  </button>
-                </td>
-                <td className="d-flex justify-content-align-content-around">
-                  <button
-                    className="flex-fill btn btn-outline-warning mx-1"
-                    onClick={() => handleResetPassword(v.account.email)}
-                  >
-                    Khôi Phục
-                  </button>
-                  <button
-                    className="flex-fill btn btn-outline-danger mx-1"
-                    onClick={() => handleDelete(v.ID, v.account.email)}
-                  >
-                    Thu Hồi
-                  </button>
-                </td>
-              </tr>
-            ))}
+            .map((v, i) => {
+              return (
+                <tr key={v.ID}>
+                  <td>{v.fullName}</td>
+                  <td>{v.account.email}</td>
+                  <td>{v.tel}</td>
+                  <td>{v.gender ? "Nữ" : "Nam"}</td>
+                  <td>
+                    <button className="btn btn-primary m-auto disabled">
+                      {v.account.DeletedAt ? "Đã Nghỉ Việc" : "Còn Làm Việc"}
+                    </button>
+                  </td>
+                  <td>
+                    <button className="btn btn-primary m-auto disabled">
+                      {v.account.roleId === 1
+                        ? "Quản Lý"
+                        : v.account.roleId === 2
+                        ? "Phục Vụ"
+                        : "Bếp"}
+                    </button>
+                  </td>
+                  <td className="d-flex justify-content-align-content-around">
+                    <button
+                      className={`flex-fill btn btn-outline-warning mx-1 ${
+                        v.DeletedAt ? "disabled" : ""
+                      }`}
+                      onClick={() => handleResetPassword(v.account.email)}
+                    >
+                      Khôi Phục
+                    </button>
+                    <button
+                      className={`flex-fill btn btn-outline-danger mx-1 ${
+                        v.DeletedAt ? "disabled" : ""
+                      }`}
+                      onClick={() => handleDelete(v.ID, v.account.email)}
+                    >
+                      Thu Hồi
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
         </tbody>
       </table>
 

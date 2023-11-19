@@ -4,7 +4,6 @@ import UpdateGood from "./UpdateGood";
 import { AuthContext } from "context/AuthContext";
 import { useContext, useEffect, useState } from "react";
 import ReactPaginate from "react-paginate";
-import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
 import { CurrencyFormat } from "utils/NumberUtil";
 
@@ -12,7 +11,6 @@ const GoodsList = () => {
   // Get Product List
   const [selectedId, setSelectedId] = useState(0);
   const { isLoading, setIsLoading } = useContext(AuthContext);
-  const navigate = useNavigate();
   const [goods, setGoods] = useState([]);
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
@@ -215,7 +213,42 @@ const GoodsList = () => {
                 ></i>
               </span>
             </th>
-            <th>Tối Thiểu</th>
+            <th
+              onMouseDownCapture={(e) => {
+                setSortDisable(false);
+              }}
+            >
+              Tối Thiểu
+              <span
+                className={`${
+                  sortDisable ? "visually-hidden" : ""
+                } d-flex justify-content-center my-1`}
+              >
+                <i
+                  className="fa-solid fa-arrow-down-z-a me-2 text-danger"
+                  onClick={(e) => {
+                    setGoods(
+                      goods.sort(
+                        (c, n) =>
+                          n.discount.minQuantity - c.discount.minQuantity
+                      )
+                    );
+                    setSortDisable(true);
+                  }}
+                ></i>
+                <i
+                  className="fa-solid fa-arrow-up-a-z text-success"
+                  onClick={(e) => {
+                    setGoods(
+                      goods.sort(
+                        (c, n) => c.discount.discount - n.discount.discount
+                      )
+                    );
+                    setSortDisable(true);
+                  }}
+                ></i>
+              </span>
+            </th>
             <th>Đơn Vị</th>
             <th>Trạng Thái</th>
             <th>Thao Tác</th>

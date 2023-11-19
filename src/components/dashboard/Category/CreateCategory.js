@@ -27,6 +27,10 @@ const CreateCategory = () => {
       })
       .then((res) => {
         setIsLoading(true);
+        setFormData({
+          name: "",
+          description: "",
+        });
         toast.success("Thêm nhóm sản phẩm thành công!");
       })
       .catch((err) => {

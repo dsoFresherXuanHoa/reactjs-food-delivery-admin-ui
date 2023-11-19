@@ -17,6 +17,7 @@ const CategoriesList = () => {
       })
       .then((res) => {
         setIsLoading(false);
+        setCategories(res.data.data);
       })
       .catch((err) => {
         console.log(err);

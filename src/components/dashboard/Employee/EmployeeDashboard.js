@@ -21,7 +21,7 @@ const EmployeeDashboard = () => {
       <Header />
       <div
         className="border shadow"
-        style={{ marginTop: 70, minHeight: "65vh" }}
+        style={{ marginTop: 70, minHeight: "80vh" }}
       >
         <ul className="nav nav-tabs nav-justified" role="tablist">
           <li className="nav-item">

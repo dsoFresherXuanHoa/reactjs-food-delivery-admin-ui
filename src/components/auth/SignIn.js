@@ -16,7 +16,7 @@ const SignIn = () => {
   const { isLogin, setIsLogin } = useContext(AuthContext);
   useEffect(() => {
     if (isLogin) {
-      navigate(`/dashboard/employees`);
+      navigate(`/employees`);
     }
   }, [isLogin]);
 
@@ -37,7 +37,7 @@ const SignIn = () => {
           localStorage.setItem("accessToken", accessToken);
           toast.success("Đăng nhập thành công!");
           setIsLogin(true);
-          navigate(`/dashboard/employees`);
+          navigate(`/employees`);
         })
         .catch((err) => {
           toast.error("Email hoặc mật khẩu khồng đúng, vui lòng thử lại!");
