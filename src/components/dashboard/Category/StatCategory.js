@@ -50,7 +50,6 @@ const StatCategory = () => {
 
   // Random Quote:
   useEffect(() => {
-    const accessToken = localStorage.getItem("accessToken");
     axios
       .get(`https://api.quotable.io/random/`)
       .then((res) => {

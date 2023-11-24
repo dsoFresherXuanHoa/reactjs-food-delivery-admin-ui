@@ -4,6 +4,7 @@ import { AuthContext } from "context/AuthContext";
 import { useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import RevenueList from "./RevenueList";
+import StatRevenue from "./StatRevenue";
 
 const RevenueDashboard = () => {
   // Check if user is login
@@ -46,7 +47,9 @@ const RevenueDashboard = () => {
           <div id="query" className="container-fluid tab-pane active">
             <RevenueList />
           </div>
-          <div id="stats" className="container tab-pane fade"></div>
+          <div id="stats" className="container-fluid tab-pane fade">
+            <StatRevenue />
+          </div>
         </div>
       </div>
 
