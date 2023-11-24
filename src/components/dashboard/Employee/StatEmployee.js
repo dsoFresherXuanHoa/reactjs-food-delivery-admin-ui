@@ -81,11 +81,35 @@ const StatEmployee = () => {
                     Date.parse(v.createdTime) < endTime
                   : true
               )
-              .reduce((a, v) => (v.table.employee.ID === e.ID ? a + 1 : a), 0);
+              .reduce((a, v) => {
+                return v.table.employee.ID === e.ID ? a + 1 : a;
+              }, 0);
+            const totalRejectedOrder = orders
+              .filter((v) =>
+                startTime !== endTime
+                  ? Date.parse(v.createdTime) > startTime &&
+                    Date.parse(v.createdTime) < endTime
+                  : true
+              )
+              .reduce((a, v) => {
+                return v.table.employee.ID === e.ID && v.rejected ? a + 1 : a;
+              }, 0);
+            const totalFinishedOrder = orders
+              .filter((v) =>
+                startTime !== endTime
+                  ? Date.parse(v.createdTime) > startTime &&
+                    Date.parse(v.createdTime) < endTime
+                  : true
+              )
+              .reduce((a, v) => {
+                return v.table.employee.ID === e.ID && v.status ? a + 1 : a;
+              }, 0);
 
             return {
               name: e.fullName,
               totalOrder: totalOrder,
+              totalRejectedOrder: totalRejectedOrder,
+              totalFinishedOrder: totalFinishedOrder,
             };
           })}
           className="m-auto my-2"
@@ -96,11 +120,13 @@ const StatEmployee = () => {
           <Tooltip />
           <Legend />
           <Line type="monotone" dataKey="totalOrder" stroke="#d63031" />
+          <Line type="monotone" dataKey="totalRejectedOrder" stroke="#e84118" />
+          <Line type="monotone" dataKey="totalFinishedOrder" stroke="#44bd32" />
         </LineChart>
       </div>
       <div className="col-md-4">
         <div className="mx-2 my-3">
-          <i className="fa-solid fa-hourglass-start mx-2"> Start Time: </i>
+          <i className="fa-solid fa-share-from-square mx-2"></i>
           <input
             type="date"
             className="form-control my-3"
@@ -110,7 +136,7 @@ const StatEmployee = () => {
             }}
           />
 
-          <i className="fa-solid fa-hourglass-end mx-2"> End Time: </i>
+          <i className="fa-solid fa-hourglass-end mx-2"></i>
           <input
             type="date"
             className="form-control my-3"

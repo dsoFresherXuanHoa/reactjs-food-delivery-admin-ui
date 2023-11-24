@@ -5,10 +5,14 @@ import { AuthContext } from "context/AuthContext";
 import { useContext, useEffect, useState } from "react";
 import { CSVLink } from "react-csv";
 import ReactPaginate from "react-paginate";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { CurrencyFormat } from "utils/NumberUtil";
 
 const GoodsList = () => {
+  // Check User Permission
+  const navigate = useNavigate();
+
   // Export
   const [exportData, setExportData] = useState([]);
 
@@ -48,6 +52,35 @@ const GoodsList = () => {
       });
   }, [isLoading]);
 
+  // Get Categories List
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState();
+  const [selectedStatus, setSelectedStatus] = useState();
+  useEffect(() => {
+    const accessToken = localStorage.getItem("accessToken");
+    axios
+      .get(`${process.env.REACT_APP_BASE_API_URL}/categories/`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then((res) => {
+        setIsLoading(false);
+        setCategories(res.data.data);
+        const exportData = categories.map((v) => ({
+          name: v.name,
+          description: v.description,
+        }));
+        setExportData(exportData);
+      })
+      .catch((err) => {
+        const statusCode = err.response.data.statusCode;
+        if (statusCode === 403) {
+          navigate("/forbidden");
+        }
+      });
+  }, []);
+
   // Delete Product:
   const handleDelete = (id) => {
     const accessToken = localStorage.getItem("accessToken");
@@ -83,6 +116,7 @@ const GoodsList = () => {
   // Time Filter
   const [startTime, setStartTime] = useState(Date.now);
   const [endTime, setEndTime] = useState(Date.now);
+
   return (
     <div className="container-fluid table-responsive p-3 border rounded-3 shadow m-1">
       {/* Update Modals */}
@@ -99,6 +133,7 @@ const GoodsList = () => {
               type="text"
               className="form-control"
               value={searchKeyword}
+              placeholder="Nhập tên món ăn để tìm kiếm theo tên món ăn"
               onChange={(e) => {
                 setSearchKeyword(e.target.value);
               }}
@@ -213,7 +248,28 @@ const GoodsList = () => {
                 ></i>
               </span>
             </th>
-            <th>Phân Loại</th>
+            <th
+              onMouseDownCapture={(e) => {
+                setSortDisable(false);
+              }}
+            >
+              Phân Loại
+              <select
+                className={`${
+                  sortDisable ? "visually-hidden" : ""
+                } d-flex justify-content-center my-1 form-select form-select-sm`}
+                onChange={(e) => {
+                  setSelectedCategory(parseInt(e.target.value));
+                  setSortDisable(true);
+                }}
+              >
+                {categories.map((v) => (
+                  <option key={v.ID} value={v.ID}>
+                    {v.name}
+                  </option>
+                ))}
+              </select>
+            </th>
             <th
               onMouseDownCapture={(e) => {
                 setSortDisable(false);
@@ -290,7 +346,25 @@ const GoodsList = () => {
               </span>
             </th>
             <th>Đơn Vị</th>
-            <th>Trạng Thái</th>
+            <th
+              onMouseDownCapture={(e) => {
+                setSortDisable(false);
+              }}
+            >
+              Trạng Thái
+              <select
+                className={`${
+                  sortDisable ? "visually-hidden" : ""
+                } d-flex justify-content-center my-1 form-select form-select-sm`}
+                onChange={(e) => {
+                  setSelectedStatus(e.target.value === "true");
+                  setSortDisable(true);
+                }}
+              >
+                <option value={true}>Kinh Doanh</option>
+                <option value={false}>Gỡ Bỏ</option>
+              </select>
+            </th>
             <th>Thao Tác</th>
           </tr>
         </thead>
@@ -305,6 +379,14 @@ const GoodsList = () => {
                   Date.parse(v.CreatedAt) < endTime
                 : true
             )
+            .filter((v) =>
+              !selectedCategory ? true : v.category.ID === selectedCategory
+            )
+            .filter((v) => {
+              return selectedStatus === undefined
+                ? true
+                : !v.DeletedAt === selectedStatus;
+            })
             .slice(offset, offset + process.env.REACT_APP_PAGINATE_SIZE)
             .map((v, i) => {
               return (

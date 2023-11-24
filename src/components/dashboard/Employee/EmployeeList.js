@@ -3,9 +3,13 @@ import { AuthContext } from "context/AuthContext";
 import { useContext, useEffect, useState } from "react";
 import { CSVLink } from "react-csv";
 import ReactPaginate from "react-paginate";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const EmployeeList = () => {
+  // Check User Permission
+  const navigate = useNavigate();
+
   // Export
   const [exportData, setExportData] = useState([]);
 
@@ -41,7 +45,10 @@ const EmployeeList = () => {
         setExportData(exportData);
       })
       .catch((err) => {
-        console.log(err);
+        const statusCode = err.response.data.statusCode;
+        if (statusCode === 403) {
+          navigate("/forbidden");
+        }
       });
   }, [isLoading]);
 
@@ -106,6 +113,14 @@ const EmployeeList = () => {
     }
   };
 
+  // Sort
+  const [sortDisable, setSortDisable] = useState(true);
+
+  // Filter
+  const [selectedGender, setSelectedGender] = useState();
+  const [selectedStatus, setSelectedStatus] = useState();
+  const [selectedPosition, setSelectedPosition] = useState();
+
   return (
     <div className="container-fluid table-responsive p-3 border rounded-3 shadow m-1">
       {/* Search */}
@@ -119,6 +134,7 @@ const EmployeeList = () => {
               type="text"
               className="form-control"
               value={searchKeyword}
+              placeholder="Nhập tên nhân viên để tìm kiếm theo tên"
               onChange={(e) => {
                 setSearchKeyword(e.target.value);
               }}
@@ -146,6 +162,7 @@ const EmployeeList = () => {
         {/* Export: */}
         <div className="col-sm-2">
           <CSVLink
+            uFEFF={false}
             data={exportData}
             className="btn btn-primary w-100"
             filename={`${Date.now()}.csv`}
@@ -173,9 +190,64 @@ const EmployeeList = () => {
             <th>Họ Tên</th>
             <th>Địa Chỉ Email</th>
             <th>Số Điện Thoại</th>
-            <th>Giới Tính</th>
-            <th>Trạng Thái</th>
-            <th>Chức Vụ</th>
+            <th
+              onMouseDownCapture={(e) => {
+                setSortDisable(false);
+              }}
+            >
+              Giới Tính
+              <select
+                className={`${
+                  sortDisable ? "visually-hidden" : ""
+                } d-flex justify-content-center my-1 form-select form-select-sm`}
+                onChange={(e) => {
+                  setSelectedGender(e.target.value === "true");
+                  setSortDisable(true);
+                }}
+              >
+                <option value={false}>Nam</option>
+                <option value={true}>Nữ</option>
+              </select>
+            </th>
+            <th
+              onMouseDownCapture={(e) => {
+                setSortDisable(false);
+              }}
+            >
+              Trạng Thái
+              <select
+                className={`${
+                  sortDisable ? "visually-hidden" : ""
+                } d-flex justify-content-center my-1 form-select form-select-sm`}
+                onChange={(e) => {
+                  setSelectedStatus(e.target.value === "true");
+                  setSortDisable(true);
+                }}
+              >
+                <option value={false}>Còn làm việc</option>
+                <option value={true}>Đã nghỉ việc</option>
+              </select>
+            </th>
+            <th
+              onMouseDownCapture={(e) => {
+                setSortDisable(false);
+              }}
+            >
+              Chức Vụ
+              <select
+                className={`${
+                  sortDisable ? "visually-hidden" : ""
+                } d-flex justify-content-center my-1 form-select form-select-sm`}
+                onChange={(e) => {
+                  setSelectedPosition(parseInt(e.target.value));
+                  setSortDisable(true);
+                }}
+              >
+                <option value={1}>Quản lý</option>
+                <option value={2}>Nhân viên</option>
+                <option value={3}>Bếp</option>
+              </select>
+            </th>
             <th>Thao Tác</th>
           </tr>
         </thead>
@@ -184,6 +256,21 @@ const EmployeeList = () => {
             .slice(offset, offset + process.env.REACT_APP_PAGINATE_SIZE)
             .filter((v) =>
               v.fullName.toLowerCase().includes(searchKeyword.toLowerCase())
+            )
+            .filter((v) => !selectedGender ?? v.gender === selectedGender)
+            .filter((v, i) => {
+              const isWorking = !v.DeletedAt;
+              const isNotWorking = v.DeletedAt;
+              return selectedStatus === undefined
+                ? true
+                : selectedStatus === false
+                ? isWorking
+                : selectedStatus === true
+                ? isNotWorking
+                : false;
+            })
+            .filter((v) =>
+              !selectedPosition ? true : v.account.roleId === selectedPosition
             )
             .map((v, i) => {
               return (

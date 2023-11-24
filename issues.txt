@@ -1,0 +1,3 @@
+- ui crash when do not have any order
+- export csv not working: employee, goods, categories
+- stats: 

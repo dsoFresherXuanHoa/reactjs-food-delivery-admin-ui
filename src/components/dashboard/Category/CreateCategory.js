@@ -17,25 +17,28 @@ const CreateCategory = () => {
   };
   const handleSubmit = (e) => {
     e.preventDefault();
-    const accessToken = localStorage.getItem("accessToken");
-    console.log(formData);
-    axios
-      .post(`${process.env.REACT_APP_BASE_API_URL}/categories/`, formData, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      })
-      .then((res) => {
-        setIsLoading(true);
-        setFormData({
-          name: "",
-          description: "",
+    if (formData.name.length === 0 || formData.description.length === 0) {
+      toast.error("Vui lòng điền đầy đủ các thông tin!");
+    } else {
+      const accessToken = localStorage.getItem("accessToken");
+      axios
+        .post(`${process.env.REACT_APP_BASE_API_URL}/categories/`, formData, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        })
+        .then((res) => {
+          setIsLoading(true);
+          setFormData({
+            name: "",
+            description: "",
+          });
+          toast.success("Thêm nhóm sản phẩm thành công!");
+        })
+        .catch((err) => {
+          toast.success("Thêm nhóm sản phẩm thất bại!");
         });
-        toast.success("Thêm nhóm sản phẩm thành công!");
-      })
-      .catch((err) => {
-        toast.success("Thêm nhóm sản phẩm thất bại!");
-      });
+    }
   };
 
   // Handle Reset

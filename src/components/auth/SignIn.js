@@ -3,6 +3,7 @@ import { AuthContext } from "context/AuthContext";
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
+import validator from "validator";
 
 const SignIn = () => {
   const payload = {
@@ -29,6 +30,15 @@ const SignIn = () => {
     e.preventDefault();
     if (formData.email.length === 0 || formData.password.length === 0) {
       toast.info("Vui lòng nhập đủ Email và mật khẩu!");
+    } else if (!validator.isEmail(formData.email)) {
+      toast.error("Vui lòng nhập địa chỉ email hợp lệ!");
+    } else if (
+      !validator.isLength(formData.password, {
+        min: 8,
+        max: 32,
+      })
+    ) {
+      toast.error("Mật khẩu chứa ít nhất 8 kí tự và tối đa 32 ký tự!");
     } else {
       axios
         .post(`${process.env.REACT_APP_BASE_API_URL}/auth/sign-in`, formData)

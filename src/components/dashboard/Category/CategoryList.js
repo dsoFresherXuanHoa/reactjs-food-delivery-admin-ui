@@ -3,8 +3,12 @@ import { AuthContext } from "context/AuthContext";
 import { useContext, useEffect, useState } from "react";
 import { CSVLink } from "react-csv";
 import ReactPaginate from "react-paginate";
+import { useNavigate } from "react-router-dom";
 
 const CategoriesList = () => {
+  // Check User Permission
+  const navigate = useNavigate();
+
   // Export
   const [exportData, setExportData] = useState([]);
 
@@ -29,7 +33,10 @@ const CategoriesList = () => {
         setExportData(exportData);
       })
       .catch((err) => {
-        console.log(err);
+        const statusCode = err.response.data.statusCode;
+        if (statusCode === 403) {
+          navigate("/forbidden");
+        }
       });
   }, [isLoading]);
 
@@ -52,6 +59,7 @@ const CategoriesList = () => {
               type="text"
               className="form-control"
               value={searchKeyword}
+              placeholder="Nhập tên nhóm món ăn để tìm kiếm theo tên nhóm"
               onChange={(e) => {
                 setSearchKeyword(e.target.value);
               }}

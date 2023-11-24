@@ -5,6 +5,7 @@ import { useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import CategoriesList from "./CategoryList";
 import CreateCategory from "./CreateCategory";
+import StatCategory from "./StatCategory";
 
 const CategoryDashboard = () => {
   // Check if user is login
@@ -41,6 +42,14 @@ const CategoryDashboard = () => {
               </span>
             </a>
           </li>
+          <li className="nav-item">
+            <a className="nav-link" data-bs-toggle="tab" href="#stats">
+              <i className="fa-solid fa-chart-simple fw-bold"></i>
+              <span className="text-success text-text-uppercase mx-2">
+                Thống Kê
+              </span>
+            </a>
+          </li>
         </ul>
 
         <div className="tab-content">
@@ -49,6 +58,9 @@ const CategoryDashboard = () => {
           </div>
           <div id="create" className="container-fluid tab-pane fade">
             <CreateCategory />
+          </div>
+          <div id="stats" className="container-fluid tab-pane fade">
+            <StatCategory />
           </div>
         </div>
       </div>

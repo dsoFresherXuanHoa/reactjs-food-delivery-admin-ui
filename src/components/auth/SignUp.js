@@ -1,7 +1,8 @@
 import axios from "axios";
 import { AuthContext } from "context/AuthContext";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import validator from "validator";
 
 const SignUp = () => {
   // Sign Up:
@@ -13,39 +14,76 @@ const SignUp = () => {
   const [isAllowSignUp, setIsAllowSignUp] = useState(true);
   const { setIsLoading } = useContext(AuthContext);
 
+  // Get used Email
+  const [usedEmail, setUsedEmail] = useState([]);
+  useEffect(() => {
+    const accessToken = localStorage.getItem("accessToken");
+    axios
+      .get(`${process.env.REACT_APP_BASE_API_URL}/employees/`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then((res) => {
+        setUsedEmail(res.data.data.map((v) => v.account.email));
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    toast.info("Đang thực hiện cấp tài khoản cho nhân viên, vui lòng chờ...");
-    setIsAllowSignUp(false);
     const accessToken = localStorage.getItem("accessToken");
     const confirm = window.confirm(`Xác nhận thông tin là chính xác?`);
     if (confirm) {
-      axios
-        .post(
-          `${process.env.REACT_APP_BASE_API_URL}/auth/sign-up`,
-          {
-            fullName,
-            tel,
-            gender,
-            email,
-            roleId,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
+      if (
+        fullName.length === 0 ||
+        tel.length === 0 ||
+        gender.length === 0 ||
+        email.length === 0 ||
+        roleId.length === 0
+      ) {
+        toast.error("Vui lòng nhập đầy đủ các thông tin!");
+      } else if (!validator.isEmail(email)) {
+        toast.error("Vui lòng nhập địa chỉ Email hợp lệ!");
+      } else if (!validator.isMobilePhone(tel, "vi-VN")) {
+        toast.error("Vui lòng nhập số điện thoại chính xác!");
+      } else if (usedEmail.includes(email)) {
+        toast.info("Email đã được sử dụng, hãy sử dụng Email khác!");
+      } else {
+        toast.info(
+          "Đang thực hiện cấp tài khoản cho nhân viên, vui lòng chờ..."
+        );
+        setIsAllowSignUp(false);
+        axios
+          .post(
+            `${process.env.REACT_APP_BASE_API_URL}/auth/sign-up`,
+            {
+              fullName,
+              tel,
+              gender,
+              email,
+              roleId,
             },
-          }
-        )
-        .then((res) => {
-          setIsLoading(true);
-          setIsAllowSignUp(true);
-          toast.success(
-            "Đã cấp tài khoản mới cho nhân viên, mã bí mật được gửi qua Email!"
-          );
-        })
-        .catch((err) => {
-          toast.error("Có lỗi xảy ra! Vui lòng thử lại sau!");
-        });
+            {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+              },
+            }
+          )
+          .then((res) => {
+            setIsLoading(true);
+            setIsAllowSignUp(true);
+            toast.success(
+              "Đã cấp tài khoản mới cho nhân viên, mã bí mật được gửi qua Email!"
+            );
+          })
+          .catch((err) => {
+            setIsAllowSignUp(true);
+            toast.error("Có lỗi xảy ra! Vui lòng thử lại sau!");
+          });
+      }
     }
   };
 

@@ -10,9 +10,10 @@ import {
   YAxis,
 } from "recharts";
 
-const StatGood = () => {
+const StatCategory = () => {
   // Get Product List
   const [goods, setGoods] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [quote, setQuote] = useState("");
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
@@ -24,6 +25,23 @@ const StatGood = () => {
       })
       .then((res) => {
         setGoods(res.data.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+
+  // Get Category List
+  useEffect(() => {
+    const accessToken = localStorage.getItem("accessToken");
+    axios
+      .get(`${process.env.REACT_APP_BASE_API_URL}/categories/`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then((res) => {
+        setCategories(res.data.data);
       })
       .catch((err) => {
         console.log(err);
@@ -55,31 +73,29 @@ const StatGood = () => {
         <LineChart
           width={900}
           height={550}
-          data={goods
-            .filter((v) =>
-              startTime !== endTime
-                ? Date.parse(v.CreatedAt) > startTime &&
-                  Date.parse(v.CreatedAt) < endTime
-                : true
-            )
-            .map((v) => ({
-              name: v.name,
-              price: v.price / 1000,
-              reorderLevel: v.reorderLevel,
-              stockAmount: v.stockAmount,
-              discountPercent: v.discount.discountPercent,
-            }))}
+          data={categories.map((c) => {
+            const targetGoods = goods
+              .filter((v) =>
+                startTime !== endTime
+                  ? Date.parse(v.CreatedAt) > startTime &&
+                    Date.parse(v.CreatedAt) < endTime
+                  : true
+              )
+              .filter((v) => v.category.ID === c.ID);
+            const totalGoods = targetGoods.length;
+            return {
+              name: c.name,
+              totalGoods: totalGoods,
+            };
+          })}
           className="m-auto my-2"
         >
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="name" />
-          <YAxis dataKey="stockAmount" />
+          <YAxis dataKey="totalGoods" />
           <Tooltip />
           <Legend />
-          <Line type="monotone" dataKey="price" stroke="#8884d8" />
-          <Line type="monotone" dataKey="reorderLevel" stroke="#d63031" />
-          <Line type="monotone" dataKey="stockAmount" stroke="#0984e3" />
-          <Line type="monotone" dataKey="discountPercent" stroke="#e84393" />
+          <Line type="monotone" dataKey="totalGoods" stroke="#8884d8" />
         </LineChart>
       </div>
       <div className="col-md-4">
@@ -118,4 +134,4 @@ const StatGood = () => {
   );
 };
 
-export default StatGood;
+export default StatCategory;

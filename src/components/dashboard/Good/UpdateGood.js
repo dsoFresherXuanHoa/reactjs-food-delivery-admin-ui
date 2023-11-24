@@ -18,27 +18,29 @@ const UpdateGood = ({ id }) => {
 
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
-    axios
-      .get(`${process.env.REACT_APP_BASE_API_URL}/products/${id}`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      })
-      .then((res) => {
-        setIsLoading(true);
-        setName(res.data.data.name);
-        setDescription(res.data.data.description);
-        setPrice(res.data.data.price);
-        setDiscountPercent(res.data.data.discount.discountPercent);
-        setMinQuantity(res.data.data.discount.minQuantity);
-        setStockAmount(res.data.data.stockAmount);
+    if (id !== 0) {
+      axios
+        .get(`${process.env.REACT_APP_BASE_API_URL}/products/${id}`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        })
+        .then((res) => {
+          setIsLoading(true);
+          setName(res.data.data.name);
+          setDescription(res.data.data.description);
+          setPrice(res.data.data.price);
+          setDiscountPercent(res.data.data.discount.discountPercent);
+          setMinQuantity(res.data.data.discount.minQuantity);
+          setStockAmount(res.data.data.stockAmount);
 
-        setProductId(res.data.data.ID);
-        setDiscountId(res.data.data.discount.ID);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+          setProductId(res.data.data.ID);
+          setDiscountId(res.data.data.discount.ID);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   }, [id]);
 
   // Handle submit form

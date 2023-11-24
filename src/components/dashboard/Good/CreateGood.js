@@ -29,11 +29,11 @@ const CreateGoods = () => {
     name: "",
     thumb: "",
     description: "",
-    price: 0,
+    price: 1000,
     categoryId: 1,
     discountPercent: 0,
-    minQuantity: 0,
-    stockAmount: 0,
+    minQuantity: 1,
+    stockAmount: 1,
   };
 
   const [formData, setFormData] = useState(payload);
@@ -52,39 +52,54 @@ const CreateGoods = () => {
       }
     }
   };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    toast.info("Đang thêm sản phẩm, vui lòng chờ...");
-    setIsAllowImport(false);
 
     const accessToken = localStorage.getItem("accessToken");
-    console.log(formData);
-    axios
-      .post(`${process.env.REACT_APP_BASE_API_URL}/warehouses/`, formData, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "multipart/form-data",
-        },
-      })
-      .then((res) => {
-        setIsLoading(true);
-        setIsAllowImport(true);
-        setFormData({
-          name: "",
-          thumb: "",
-          description: "",
-          price: 0,
-          categoryId: 1,
-          discountPercent: 0,
-          minQuantity: 0,
-          stockAmount: 0,
+    if (
+      formData.name.trim().length === 0 ||
+      formData.thumb.length === 0 ||
+      formData.description.trim().length === 0 ||
+      formData.price === 0 ||
+      formData.discountPercent === 0 ||
+      formData.minQuantity === 0 ||
+      formData.categoryId === 0 ||
+      formData.stockAmount === 0
+    ) {
+      toast.error("Vui lòng nhập đủ các thông tin!");
+    } else if (formData.discountPercent > 100) {
+      toast.error("Phần trăm giảm giá phải nhó hơn 100%");
+    } else {
+      toast.info("Đang thêm sản phẩm, vui lòng chờ...");
+      setIsAllowImport(false);
+      axios
+        .post(`${process.env.REACT_APP_BASE_API_URL}/warehouses/`, formData, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then((res) => {
+          setIsLoading(true);
+          setIsAllowImport(true);
+          setFormData({
+            name: "",
+            thumb: "",
+            description: "",
+            price: 0,
+            categoryId: 1,
+            discountPercent: 0,
+            minQuantity: 0,
+            stockAmount: 0,
+          });
+          toast.success("Thêm sản phẩm thành công!");
+        })
+        .catch((err) => {
+          setIsAllowImport(true);
+          toast.success("Thêm sản phẩm thất bại!");
         });
-        toast.success("Thêm sản phẩm thành công!");
-      })
-      .catch((err) => {
-        setIsAllowImport(true);
-        toast.success("Thêm sản phẩm thất bại!");
-      });
+    }
   };
   const handleReset = () => {
     setFormData({
@@ -161,7 +176,6 @@ const CreateGoods = () => {
               name="price"
               min={1000}
               step={5000}
-              max={100000}
               required
             />
             <label htmlFor="tfPrice" className="mx-3">
@@ -178,6 +192,7 @@ const CreateGoods = () => {
               id="tfDiscountPercent"
               placeholder="Nhập phần trăm giảm giá sản phẩm:"
               name="discountPercent"
+              min={1}
               required
             />
             <label htmlFor="tfDiscountPercent" className="mx-3">
@@ -194,6 +209,7 @@ const CreateGoods = () => {
               id="tfMinQuantity"
               placeholder="Nhập số lượng sản phẩm tối thiểu để sử dụng mã giảm giá:"
               name="minQuantity"
+              min={1}
               required
             />
             <label htmlFor="tfMinQuantity" className="mx-3">

@@ -2,9 +2,13 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { CSVLink } from "react-csv";
 import ReactPaginate from "react-paginate";
+import { useNavigate } from "react-router-dom";
 import { CurrencyFormat } from "utils/NumberUtil";
 
 const RevenueList = () => {
+  // Check User Permission
+  const navigate = useNavigate();
+
   // Export
   const [exportData, setExportData] = useState([]);
 
@@ -42,6 +46,27 @@ const RevenueList = () => {
       });
   }, []);
 
+  // Get All Table
+  const [tables, setTables] = useState([]);
+  useEffect(() => {
+    const accessToken = localStorage.getItem("accessToken");
+    axios
+      .get(`${process.env.REACT_APP_BASE_API_URL}/tables/all`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then((res) => {
+        setTables(res.data.data);
+      })
+      .catch((err) => {
+        const statusCode = err.response.data.statusCode;
+        if (statusCode === 403) {
+          navigate("/forbidden");
+        }
+      });
+  }, []);
+
   // Paging
   const [offset, setOffset] = useState(0);
 
@@ -51,6 +76,14 @@ const RevenueList = () => {
   // Time Filter
   const [startTime, setStartTime] = useState(Date.now);
   const [endTime, setEndTime] = useState(Date.now);
+
+  // Sort
+  const [sortDisable, setSortDisable] = useState(true);
+
+  // Filter
+  const orderType = ["Từ Chối", "Chờ", "Hoàn Thành", "Chưa Hoàn Thành"];
+  const [selectedTable, setSelectedTable] = useState();
+  const [selectedOrderType, setSelectedTableType] = useState();
 
   return (
     <div className="container-fluid p-3 border rounded-3 shadow m-1">
@@ -65,6 +98,7 @@ const RevenueList = () => {
               type="text"
               className="form-control"
               value={searchKeyword}
+              placeholder="Nhập tên khu vực để tìm theo tên khu vực"
               onChange={(e) => {
                 setSearchKeyword(e.target.value);
               }}
@@ -122,11 +156,53 @@ const RevenueList = () => {
             <th>Lập Đơn</th>
             <th>Chấp Nhận</th>
             <th>Nhân Viên</th>
-            <th>Bàn</th>
+            <th
+              onMouseDownCapture={(e) => {
+                setSortDisable(false);
+              }}
+            >
+              Bàn
+              <select
+                className={`${
+                  sortDisable ? "visually-hidden" : ""
+                } d-flex justify-content-center my-1 form-select form-select-sm`}
+                onChange={(e) => {
+                  setSelectedTable(parseInt(e.target.value));
+                  setSortDisable(true);
+                }}
+              >
+                {tables.map((v) => (
+                  <option key={v.ID} value={v.ID}>
+                    {v.ID}
+                  </option>
+                ))}
+              </select>
+            </th>
             <th>Khu Vực</th>
             <th>Sản Phẩm</th>
             <th>Tổng</th>
-            <th>Loại Đơn</th>
+            <th
+              onMouseDownCapture={(e) => {
+                setSortDisable(false);
+              }}
+            >
+              Loại Đơn
+              <select
+                className={`${
+                  sortDisable ? "visually-hidden" : ""
+                } d-flex justify-content-center my-1 form-select form-select-sm`}
+                onChange={(e) => {
+                  setSelectedTableType(parseInt(e.target.value));
+                  setSortDisable(true);
+                }}
+              >
+                {orderType.map((v, i) => (
+                  <option key={i} value={i}>
+                    {v}
+                  </option>
+                ))}
+              </select>
+            </th>
             <th>Ghi Chú</th>
             <th>Lý Do Hủy</th>
           </tr>
@@ -144,6 +220,27 @@ const RevenueList = () => {
                   Date.parse(v.createdTime) < endTime
                 : true
             )
+            .filter((v) =>
+              !selectedTable ? true : selectedTable === v.table.ID
+            )
+            .filter((v, i) => {
+              const isNotFinished = v.acceptedTime && !v.status;
+              const isNotAccepted = !v.acceptedTime && !v.rejected;
+              const isFinish = v.acceptedTime && v.status;
+              const isRejected = v.rejected;
+
+              return selectedOrderType === undefined
+                ? true
+                : selectedOrderType === 0
+                ? isRejected
+                : selectedOrderType === 3
+                ? isNotFinished
+                : selectedOrderType === 1
+                ? isNotAccepted
+                : selectedOrderType === 2
+                ? isFinish
+                : false;
+            })
             .slice(offset, offset + process.env.REACT_APP_PAGINATE_SIZE)
             .map((v, i) => (
               <tr key={i}>
@@ -174,11 +271,11 @@ const RevenueList = () => {
                     ))}
                   </ul>
                 </td>
-                <td></td>
+                <td>{CurrencyFormat(v.totalPrice)}</td>
                 <td className="d-flex">
-                  {v.compensate ? (
-                    <button className="flex-fill btn btn-warning mx-1">
-                      Đền
+                  {v.rejected ? (
+                    <button className="flex-fill btn btn-danger mx-1">
+                      Từ Chối
                     </button>
                   ) : !v.acceptedTime ? (
                     <button className="flex-fill btn btn-warning mx-1">
@@ -189,7 +286,7 @@ const RevenueList = () => {
                       Hoàn Thành
                     </button>
                   ) : (
-                    <button className="flex-fill btn btn-success mx-1">
+                    <button className="flex-fill btn btn-primary mx-1">
                       Chưa Hoàn Thành
                     </button>
                   )}
