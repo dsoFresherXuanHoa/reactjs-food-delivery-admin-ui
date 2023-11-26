@@ -25,8 +25,9 @@ const EmployeeList = () => {
         },
       })
       .then((res) => {
+        const targetEmployee = res.data.data?.filter((e) => e.ID !== 0);
         setIsLoading(false);
-        setEmployees(res.data.data);
+        setEmployees(targetEmployee);
         const exportData = employees.map((v) => ({
           id: v.ID,
           createdTime: v.CreatedAt,
@@ -253,12 +254,12 @@ const EmployeeList = () => {
         </thead>
         <tbody className="text-center m-auto">
           {employees
-            .slice(offset, offset + process.env.REACT_APP_PAGINATE_SIZE)
-            .filter((v) =>
+            ?.slice(offset, offset + process.env.REACT_APP_PAGINATE_SIZE)
+            ?.filter((v) =>
               v.fullName.toLowerCase().includes(searchKeyword.toLowerCase())
             )
-            .filter((v) => !selectedGender ?? v.gender === selectedGender)
-            .filter((v, i) => {
+            ?.filter((v) => !selectedGender ?? v.gender === selectedGender)
+            ?.filter((v, i) => {
               const isWorking = !v.DeletedAt;
               const isNotWorking = v.DeletedAt;
               return selectedStatus === undefined
@@ -269,10 +270,10 @@ const EmployeeList = () => {
                 ? isNotWorking
                 : false;
             })
-            .filter((v) =>
+            ?.filter((v) =>
               !selectedPosition ? true : v.account.roleId === selectedPosition
             )
-            .map((v, i) => {
+            ?.map((v, i) => {
               return (
                 <tr key={v.ID}>
                   <td>{v.fullName}</td>

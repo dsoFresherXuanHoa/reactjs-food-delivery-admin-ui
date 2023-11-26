@@ -75,33 +75,33 @@ const StatEmployee = () => {
           height={550}
           data={employees.map((e) => {
             const totalOrder = orders
-              .filter((v) =>
+              ?.filter((v) =>
                 startTime !== endTime
                   ? Date.parse(v.createdTime) > startTime &&
                     Date.parse(v.createdTime) < endTime
                   : true
               )
-              .reduce((a, v) => {
+              ?.reduce((a, v) => {
                 return v.table.employee.ID === e.ID ? a + 1 : a;
               }, 0);
             const totalRejectedOrder = orders
-              .filter((v) =>
+              ?.filter((v) =>
                 startTime !== endTime
                   ? Date.parse(v.createdTime) > startTime &&
                     Date.parse(v.createdTime) < endTime
                   : true
               )
-              .reduce((a, v) => {
+              ?.reduce((a, v) => {
                 return v.table.employee.ID === e.ID && v.rejected ? a + 1 : a;
               }, 0);
             const totalFinishedOrder = orders
-              .filter((v) =>
+              ?.filter((v) =>
                 startTime !== endTime
                   ? Date.parse(v.createdTime) > startTime &&
                     Date.parse(v.createdTime) < endTime
                   : true
               )
-              .reduce((a, v) => {
+              ?.reduce((a, v) => {
                 return v.table.employee.ID === e.ID && v.status ? a + 1 : a;
               }, 0);
 

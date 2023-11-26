@@ -56,13 +56,13 @@ const StatGood = () => {
           width={900}
           height={550}
           data={goods
-            .filter((v) =>
+            ?.filter((v) =>
               startTime !== endTime
                 ? Date.parse(v.CreatedAt) > startTime &&
                   Date.parse(v.CreatedAt) < endTime
                 : true
             )
-            .map((v) => ({
+            ?.map((v) => ({
               name: v.name,
               price: v.price / 1000,
               reorderLevel: v.reorderLevel,

@@ -11,6 +11,7 @@ const SignUp = () => {
   const [gender, setGender] = useState(false);
   const [email, setEmail] = useState("");
   const [roleId, setRoleId] = useState(2);
+  const [secretKey, setSecretKey] = useState();
   const [isAllowSignUp, setIsAllowSignUp] = useState(true);
   const { setIsLoading } = useContext(AuthContext);
 
@@ -75,6 +76,7 @@ const SignUp = () => {
           .then((res) => {
             setIsLoading(true);
             setIsAllowSignUp(true);
+            setSecretKey(res.data.data.secretCode);
             toast.success(
               "Đã cấp tài khoản mới cho nhân viên, mã bí mật được gửi qua Email!"
             );
@@ -95,6 +97,8 @@ const SignUp = () => {
     setRoleId(2);
     setEmail("");
   };
+
+  // Download Employee Information
 
   return (
     <form className="p-3 border rounded-3 shadow m-1 container-fluid">
@@ -188,6 +192,15 @@ const SignUp = () => {
             Chọn Giới Tính Nhân Viên:
           </label>
         </div>
+      </div>
+
+      <div className="d-grid d-flex">
+        <button
+          hidden={!secretKey}
+          className="flex-fill btn btn-danger text-white text-uppercase"
+        >
+          Mã Bí Mật Của Nhân Viên: {secretKey}
+        </button>
       </div>
 
       <div className="d-grid d-flex">
