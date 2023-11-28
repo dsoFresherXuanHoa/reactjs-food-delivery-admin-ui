@@ -91,14 +91,15 @@ const StatRevenue = () => {
                   return v.status ? a + 1 : a;
                 }, 0);
 
+              const result = [
+                totalOrder,
+                totalFinishedOrder,
+                totalRejectedOrder,
+              ];
+
               return {
                 name: type,
-                total:
-                  i === 0
-                    ? totalFinishedOrder
-                    : i === 1
-                    ? totalOrder
-                    : totalRejectedOrder,
+                total: result[i],
               };
             })}
             cx="50%"
@@ -148,9 +149,9 @@ const StatRevenue = () => {
               name: type,
               total:
                 i === 0
-                  ? totalFinishedOrder
-                  : i === 1
                   ? totalOrder
+                  : i === 1
+                  ? totalFinishedOrder
                   : totalRejectedOrder,
             };
           })}
