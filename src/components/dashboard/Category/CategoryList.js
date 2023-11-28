@@ -117,7 +117,10 @@ const CategoriesList = () => {
         </thead>
         <tbody className="text-center m-auto">
           {categories
-            .slice(offset, offset + process.env.REACT_APP_PAGINATE_SIZE)
+            .slice(
+              offset,
+              offset + parseInt(process.env.REACT_APP_PAGINATE_SIZE)
+            )
             .filter((v) =>
               v.name.toLowerCase().includes(searchKeyword.toLowerCase())
             )

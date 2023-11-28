@@ -241,7 +241,10 @@ const RevenueList = () => {
                 ? isFinish
                 : false;
             })
-            .slice(offset, offset + process.env.REACT_APP_PAGINATE_SIZE)
+            .slice(
+              offset,
+              offset + parseInt(process.env.REACT_APP_PAGINATE_SIZE)
+            )
             .map((v, i) => (
               <tr key={i}>
                 <td>{new Date(Date.parse(v.createdTime)).toDateString()}</td>

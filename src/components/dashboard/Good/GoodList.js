@@ -387,7 +387,10 @@ const GoodsList = () => {
                 ? true
                 : !v.DeletedAt === selectedStatus;
             })
-            .slice(offset, offset + process.env.REACT_APP_PAGINATE_SIZE)
+            .slice(
+              offset,
+              offset + parseInt(process.env.REACT_APP_PAGINATE_SIZE)
+            )
             .map((v, i) => {
               return (
                 <tr key={i}>

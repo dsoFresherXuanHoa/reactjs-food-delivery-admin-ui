@@ -254,7 +254,10 @@ const EmployeeList = () => {
         </thead>
         <tbody className="text-center m-auto">
           {employees
-            ?.slice(offset, offset + process.env.REACT_APP_PAGINATE_SIZE)
+            ?.slice(
+              offset,
+              offset + parseInt(process.env.REACT_APP_PAGINATE_SIZE)
+            )
             ?.filter((v) =>
               v.fullName.toLowerCase().includes(searchKeyword.toLowerCase())
             )
@@ -328,6 +331,7 @@ const EmployeeList = () => {
             const currentPage = e.selected + 1;
             const offset =
               (currentPage - 1) * process.env.REACT_APP_PAGINATE_SIZE;
+            console.log(e.selected, currentPage, offset);
             setOffset(offset);
           }}
           marginPagesDisplayed={3}
