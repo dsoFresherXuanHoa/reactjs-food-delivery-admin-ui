@@ -49,7 +49,7 @@ const StatRevenue = () => {
   const [endTime, setEndTime] = useState(Date.now);
 
   // Chart
-  const orderType = ["Tất Cả", "Đơn Chấp Nhận", "Đơn Từ Chối"];
+  const orderType = ["Tất Cả", "Đơn Hoàn Thành", "Đơn Từ Chối"];
 
   return (
     <div
