@@ -62,8 +62,6 @@ const CreateGoods = () => {
       formData.thumb.length === 0 ||
       formData.description.trim().length === 0 ||
       formData.price === 0 ||
-      formData.discountPercent === 0 ||
-      formData.minQuantity === 0 ||
       formData.categoryId === 0 ||
       formData.stockAmount === 0
     ) {

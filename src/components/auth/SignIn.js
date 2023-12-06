@@ -7,8 +7,8 @@ import validator from "validator";
 
 const SignIn = () => {
   const payload = {
-    email: "dso.intern.xuanhoa@gmail.com",
-    password: "dso.intern.xuanhoa@gmail.com",
+    email: "",
+    password: "",
   };
   const [formData, setFormData] = useState(payload);
   const navigate = useNavigate();

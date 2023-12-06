@@ -4,6 +4,7 @@ import { CSVLink } from "react-csv";
 import ReactPaginate from "react-paginate";
 import { useNavigate } from "react-router-dom";
 import { CurrencyFormat } from "utils/NumberUtil";
+import RevenueInfo from "./RevenueInfo";
 
 const RevenueList = () => {
   // Check User Permission
@@ -85,8 +86,14 @@ const RevenueList = () => {
   const [selectedTable, setSelectedTable] = useState();
   const [selectedOrderType, setSelectedTableType] = useState();
 
+  // Show Bill Information:
+  const [selectedId, setSelectedId] = useState(0);
+
   return (
     <div className="container-fluid p-3 border rounded-3 shadow m-1">
+      {/* RevenueInfo Modals */}
+      <RevenueInfo id={selectedId} />
+
       {/* Search */}
       <div className="row">
         <div className="col-sm-4">
@@ -205,6 +212,7 @@ const RevenueList = () => {
             </th>
             <th>Ghi Chú</th>
             <th>Lý Do Hủy</th>
+            <th>Chi Tiết</th>
           </tr>
         </thead>
         <tbody className="text-center m-auto">
@@ -296,6 +304,18 @@ const RevenueList = () => {
                 </td>
                 <td>{v.note}</td>
                 <td>{v.reason}</td>
+                <td>
+                  <button
+                    onClick={() => {
+                      setSelectedId(v.orderId);
+                    }}
+                    data-bs-toggle="modal"
+                    data-bs-target="#revenueInfo"
+                    className="btn btn-secondary"
+                  >
+                    <i className="fa-solid fa-info"></i>
+                  </button>
+                </td>
               </tr>
             ))}
         </tbody>
